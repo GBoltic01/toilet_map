@@ -1,0 +1,49 @@
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 100;
+  }
+  
+  th, td {
+    text-align: left;
+    padding: 8px;
+    vertical-align: middle;
+    width: 80%;
+  }
+
+  .right {
+    text-align: right;
+    font-weight: 200;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+
+  .table-title {
+    position: relative;
+    text-align: center;
+    align-content: center;
+    font-family: 'Poppins', sans-serif;
+    
+  }
+  .table-title-font {
+    font-weight: 600;
+  }
+
+  td {
+    padding-top: 5px;
+    padding-left: 0px;
+  }
+
+.font {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+}
+
+.font-1 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 200;
+}

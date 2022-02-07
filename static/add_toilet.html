@@ -1,0 +1,80 @@
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLongTitle" style="font-family: 'Poppins', sans-serif;">Toilet Information</h3>
+          <button type="button" style="margin-top: -30px;" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <style>
+        html * 
+        {
+          font-family: 'Poppins', sans-serif;
+        }
+      </style>
+
+      <div class="modal-body">
+        <form action="/glasgow" method="POST">
+          <h4>Location</h4>
+          <input id="name" type="text" name="location" style="font-size: 1.5rem"/>
+
+          <h4>Is the use of toliet free of charge?</h4>
+          <select name="free_of_charge">
+            <option value=""></option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+
+          <h4>Is it a public toilet?</h4>
+          <select name="public">
+            <option value=""></option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+            <option value="Not sure">Not sure</option>
+          </select>
+
+          <h4>Do you need to buy a product or pay for a service in order to use the toilet?</h4>
+          <select name="buy_product">
+            <option value=""></option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+            <option value="Not sure">Not sure</option>
+          </select>
+
+          <h4>Is the toilet accessible for people with dissabilities?</h4>
+          <select name="accessible">
+            <option value=""></option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+            <option value="Not sure">Not sure</option>
+          </select>
+          <h4>How clean is it usually?</h4>
+          <input data-role="rating" data-stars="5" name="cleanliness">
+
+          <h4>Are the toiletries provided?</h4>
+          <select name="toiletries">
+            <option value=""></option>
+            <option value="Usually yes">Usually yes</option>
+            <option value="Sometimes">Sometimes</option>
+            <option value="Usually not">Usually not</option>
+            <option value="Not sure">Not sure</option>
+          </select>
+
+          <h4>What is your overall rating of this facility?</h4>
+          <input data-role="rating" data-stars="5" name="overall-rating">
+
+          <h4>Anything else you want to highlight?</h4>
+          <input type="text" name="other-comments" style="font-size: 1.5rem"/>
+
+          <input id="coordinates-input" name="coordinates" type="text" hidden/>
+
+          <div class="btn-block">
+            <button type="submit" class="btn btn-primary" id="button-submit" href="/glasgow">Submit</button>
+          </div>
+
+        </form>        
+      </div>
+    </div>
+  </div>
+</div>
