@@ -82,12 +82,13 @@
 
           var geojson = '{{ geojson_points|tojson }}'
 
-          let cookie = document.cookie.split('=')[1]
+          var cookie = document.cookie.split('=')[1]
           console.log(cookie)
+          
+          // CREATE BASIC MAP
           
           var map = L.map('map').setView([55.861098, -4.255484], 14);
 
-          // ADD ATTRIBUTION CONTROL TO THE BASEMAP!
           
           var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
@@ -96,13 +97,16 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
           }).addTo(map)
 
-          // MARKER IDs AND STUFF
+          // THE FUNCTION BELOW CONVERTS THE DATA THE FROM JSON TO A POINT LAYER, SO IT CAN BE LOADED AND DISPLAYED ON THE MAP
           
           var featureId = {};
 
           var loadData = L.geoJson(JSON.parse(geojson), {
             
             pointToLayer: function(feature, latlng) {
+            
+   	      // LEAFLET SYNTAX THAT MAKES POINTS LOOK NICE WITH THE HELP OF FONT AWESOME/AWESOME MARKERS 
+   	      
               var layer = L.marker(latlng, {
                   icon: L.AwesomeMarkers.icon({
                   icon: 'restroom',
@@ -112,11 +116,19 @@
               });
               return layer
             }, 
-
+	    
             onEachFeature: function onEachFeature(feature, layer) { 
-
+            
+	     // L.stamp CREATES A UNIQUE STAMP/ID FOR EVERY POINT DISPLAYED ON THE MAP. THIS HAD TO DONE SO THE PROGRAM KNOWS WHICH POINT IT NEEDS TO DELTE 
+	     // IF USERS DECIDES THEY WANT TO DELETE AN ENTRY
+	     
               featureId[feature.properties.id] = L.stamp(layer);
-
+              
+	     // ABSOLUTE MESS BELOW. SURELY THERE IS MUCH BETTER WAY TO DO THIS, BUT IT WORKED AT THE TIME TO JUST BRUTE FORCE THE SOLUTION LIKE THIS.
+	     
+	     // IS THIS AN EXAMPLE WHERE REACT WOULD COME HANDY? WHAT IS GENERALLY A 'CORRECT' WAY OF DOINT THIS ANYWAY? 
+	     // I ASSUME CREATING A SEPERATE HTML FILE AND JUST LINKING IT IN?
+	     
               layer.bindPopup(
                 '<div class="table-title"><h4 class="table-title-font">' + feature.properties.location_1 + '</h4>' + 
                 starRating(feature.properties.rating) + '</div>' +
@@ -133,7 +145,9 @@
               )
             }
           }).addTo(map);
-
+	  
+	  // A FEW 'STYLING' FUNCTION USED IN THE GENERATED POP-UP
+	  
           function starRating(rating) {
             if (rating == 1) {
               return '<input data-role="rating" data-value="1" data-static="true">'}
@@ -166,7 +180,7 @@
             }
           };
 
-//        AJAX CALL THAT WILL POST THE UPVOTE IN THE POPUP
+         // AJAX CALL THAT WILL POST THE UPVOTE IN THE DATABASE
 
           $(document).on('click', '#hide-button', function(event) {
             $.ajax({
@@ -183,13 +197,17 @@
               }
             });
           });
-
+          
+          // FUNCTION THAT CHECKS IF THE PROGRAM HAS TO DELETE THE ENTRY OR REPORT HE ENTRY
+          // USER CAN DELETE THE ENTRY IF THEY ARE THE ONE WHO CREATED IT, OR THEY CAN ONLY 'REPORT' IT IF SOMEONE ELSE CREATED THAT ENTRY
+          
           $(document).on('click', '#delete-button', function(event) {
             if ($('#delete-button').text() == 'Delete') {
-              console.log(('#delete-button').value)
               var resp = confirm("Are you sure you want to delete this entry?")
               if (resp == true) {
-
+              
+		// AJAX FUNCTION THAT WILL DELETE THE ENTRY FROM THE DATABASE
+		
                 $.ajax({
                   url: '/delete-entry',
                   type: 'post',
@@ -206,6 +224,10 @@
                   }
                 })
               }
+              
+            // IF THE USER CLICKS ON A POINT THAT WAS CREATED BY SOMEONE ELSE, THEY CAN REPORT THE ENTRY. 
+            // THE CODE BELOW LOADS A MODAL WITH THE FORM THAT SENDS AND EMAIL TO ADMIN IN ORDER TO DELETE THAT SPECIFIC POINT  
+              
             } else {
                 $('#modal-trigger').load("{{ url_for('static', filename='report_entry.html') }}?v2 #myModal",function(){
                   $('#myModal').modal();
@@ -216,7 +238,9 @@
                     var reportMessage = $('#report-form').val()
                     
                     $('#myModal').modal('hide');
-
+                    
+		     // AJAX CALL THAT SENDS AN EMAIL TO THE ADMIN.   
+		     
                     $.ajax({
                       url: '/report-entry',
                       type: 'post',
@@ -241,7 +265,9 @@
             });
           
           var popup = L.popup();
-
+          
+	  // WHEN A USER CLICKS ON A MAP, THE BUTTON IS GENERATED IN THE POPUP, PROMTING A USER TO ADD A POINT TO THE MAP.
+	  
           function onMapClick() {
             function createButton(label, container) {
               btn = L.DomUtil.create('button', '', container);
@@ -261,7 +287,10 @@
                 .setContent(container)
                 .openOn(map);
               L.DomEvent.on(container, 'click', function() {
-
+              
+		// LEAFLET USES LATLON NOTATION AND POSTGIS USES LONLAT NOTATION. IN ORDER TO ENTER VALID COORDINATES IN POSTGIS DATABASE, THE VALUES NEED TO BE FLIPPED. 
+		// SO THE CODE BELOW BASICALLY JUST FLIPS THE LAT-LON TO LON-LAT AND FORMATS THE COORDINATES IN THE WAY THAT POSTGIS CAN ACCEPT THEM 
+                
                 var coordinates = e.latlng
                 coordinates = coordinates.toString().replace(/[LatLng),( ]/g,'')
                 var coordinateY = coordinates.substr(0, coordinates.indexOf('-')); 
@@ -270,7 +299,9 @@
                 console.log(coordinates)
 
                 map.closePopup();
-
+                
+		// WHEN USER CLICKS ON A BUTTON, THE PROGRAM WILL LOAD AN HTML FORM IN A MODAL WINDOW
+		 
                 $('#modal-trigger').load("{{ url_for('static', filename='add_toilet.html') }}?v=74 #myModal",function(){
                   $('#myModal').modal();
                   $('#coordinates-input').val(coordinates);
